@@ -1,0 +1,107 @@
+# ============================================================
+# Exploratory Data Analysis of Synthetic Customer Behavior Data
+# (Advanced Realistic Version - Segment-Based Spending)
+# ============================================================
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+np.random.seed(42)
+
+# ============================================================
+# STEP 1: Generate Synthetic Dataset (500+ records)
+# ============================================================
+
+num_records = 500
+
+# Create customer segments first
+segments = np.random.choice(
+    ["Basic", "Premium", "VIP"],
+    size=num_records,
+    p=[0.5, 0.3, 0.2]  # Distribution of segments
+)
+
+purchase_amount = []
+
+for segment in segments:
+    if segment == "Basic":
+        purchase_amount.append(np.random.normal(1000, 300))
+    elif segment == "Premium":
+        purchase_amount.append(np.random.normal(2500, 500))
+    else:  # VIP
+        purchase_amount.append(np.random.normal(4000, 700))
+
+# Convert to numpy array and ensure no negative values
+purchase_amount = np.clip(purchase_amount, 100, None)
+
+data = {
+    "PurchaseAmount": purchase_amount,
+    "VisitFrequency": np.random.randint(1, 31, num_records),
+    "TenureMonths": np.random.randint(1, 61, num_records),
+    "Segment": segments
+}
+
+df = pd.DataFrame(data)
+
+# ============================================================
+# STEP 2: Data Inspection & Cleaning
+# ============================================================
+
+print("\nFirst 10 Rows:\n")
+print(df.head(10))
+
+print("\nDataFrame Info:\n")
+df.info()
+
+print("\nMissing Values:\n")
+print(df.isnull().sum())
+
+print("\nDuplicate Rows:\n")
+print(df.duplicated().sum())
+
+# ============================================================
+# STEP 3: Descriptive Statistics
+# ============================================================
+
+print("\nDescriptive Statistics:\n")
+print(df.describe())
+
+print("\nMedian Values:\n")
+print(df.median(numeric_only=True))
+
+print("\nSegment Frequency Counts:\n")
+print(df["Segment"].value_counts())
+
+# ============================================================
+# STEP 4: Visualizations
+# ============================================================
+
+# Histogram
+plt.figure()
+plt.hist(df["PurchaseAmount"], bins=30)
+plt.title("Distribution of Purchase Amount")
+plt.xlabel("Purchase Amount")
+plt.ylabel("Frequency")
+plt.show()
+
+# Boxplot
+plt.figure()
+sns.boxplot(x="Segment", y="PurchaseAmount", data=df)
+plt.title("Purchase Amount by Customer Segment")
+plt.xlabel("Segment")
+plt.ylabel("Purchase Amount")
+plt.show()
+
+# ============================================================
+# STEP 5: Summary
+# ============================================================
+
+print("\nSummary:\n")
+print(
+    "The descriptive statistics show that the average purchase amount varies significantly across customers. "
+    "The box plot clearly indicates that VIP customers have the highest median purchase amount, followed by "
+    "Premium and Basic segments. This suggests that higher-tier customer segments contribute more revenue "
+    "and exhibit greater spending variability."
+)
